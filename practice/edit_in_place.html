@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+</head>
+<body>
+    <div id="doc">
+    </div>
+    <script>
+        /*
+        * 类 EditInPlace 原生开发一个组件
+        * 功能：就地编辑
+        * 参数：id，指页面id或元素id，必填
+        * parent：必填，将这个组件挂载在父元素上
+        * value：默认值，选填
+        * url
+        * key
+        * 轮子与每个业务都无关，但是服务于每个业务 造轮子进行函数封装 
+        * EditInPlace为一个轮子，为了轮子更好地封装，可以用一个类进行构造
+        */
+
+        // Page({
+            
+        // })
+        function EditInPlace(o){
+            // this 指类的实例，是个对象
+            this.id = o.id;
+            this.parentElement = o.parent;
+            // 用户第三个参数没传，默认为default value,选填
+            this.value = o.value || 'default value';
+            this.url = o.url || null;
+            this.key = o.key || null;
+            // console.log(this.value);
+            // 将组件加到页面上去 
+            // 封装html结点
+            this.createElement();
+            // 添加相关事件：点击事件
+            this.attachEvents();
+        };
+
+        EditInPlace.prototype.createElement = function() {
+            // createElement为DOM 的Api，C操作，HTML，js
+            // appendChild ?
+            this.containerElement = document.createElement('div');
+            // 挂载结点  
+            // appendChild方法是向节点的子节点列表的末尾添加新的子节点
+            this.parentElement.appendChild(this.containerElement);
+
+            this.staticElement = document.createElement('span');
+            this.containerElement.appendChild(this.staticElement);
+            this.staticElement.innerText = this.value;
+
+            this.inputElement = document.createElement('input');
+            this.containerElement.appendChild(this.inputElement);
+            this.inputElement.value = this.value;
+
+            // 保存按钮
+            this.saveButton = document.createElement('input');
+            // 设置按钮的类型
+            this.saveButton.type = 'button';
+            this.saveButton.value = 'Save';
+            this.containerElement.appendChild(this.saveButton);
+
+            this.cancelButton = document.createElement('input');
+            this.cancelButton.type = 'button';
+            this.cancelButton.value = 'Cancel';
+            this.containerElement.appendChild(this.cancelButton);
+            // 隐藏其他，进入文本模式
+            this.convertToText();
+            // this.convertToEdit();
+        };
+
+        EditInPlace.prototype.attachEvents = function() {
+            var that = this;
+            // this 是每个函数都有的
+            // 由函数被调用的方式决定
+            // this.convertToEdit(this1 函数作为对象的方法调用，
+            // 函数内部会生成一个this1，此时this1=this；
+            // 事件回调函数普通函数被调用，this指向windows
+            this.staticElement.addEventListener('click', function() {
+                // function()为一个回调函数，此时this不指向当前对象,而指向windows全局
+                that.convertToEdit();
+            });
+            this.cancelButton.addEventListener('click', function() {
+                // 不能直接切过去，万一改了文字怎么办？
+                var strVal = that.inputElement.value;
+                if(strVal != that.value) {
+                    if(confirm('您确定放弃本次的修改吗？')) {
+                        that.convertToText();
+                    }
+                    return ;
+                }
+                // that.convertToText();
+            });
+
+            this.saveButton.addEventListener('click', function() {
+                // 跟后端同步数据 要用到ajax,ajax用于前后端通信 异步请求
+                // 违背了封装,封装的目的是抽象
+                // 业务就耦合了,业务层把具象(是url,key,具体的对象)拿掉
+                var strVal = that.inputElement.value;
+                // 保存请求
+                if(!that.url) {
+                    that.staticElement.innerText = strVal;
+                    that.convertToText();
+                    return;
+                }
+                // $.getJSON('http://www.easy-mock.com/mock/5a09867f28b23066479b8365/ajaxData/getUserInfo',
+                $.getJSON(
+                that.url,
+                {[that.key]:strVal},
+                function(data) {
+                    that.staticElement.innerText = strVal;
+                    that.convertToText();
+                });
+            })            
+        };
+       
+        EditInPlace.prototype.convertToText = function() {
+            this.inputElement.style.display = 'none';
+            this.saveButton.style.display = 'none';
+            this.cancelButton.style.display = 'none';
+            this.staticElement.style.display = 'inline';
+        };
+        // 把文字状态转化成编辑状态
+        EditInPlace.prototype.convertToEdit = function() {
+            this.inputElement.style.display = 'inline';
+            this.saveButton.style.display = 'inline';
+            this.cancelButton.style.display = 'inline';
+            this.staticElement.style.display = 'none';
+        };
+        // 封装
+
+        var title_url = "http://www.easy-mock.com/mock/5a09867f28b23066479b8365/ajaxData/getUserInfo";
+        var title_key = 'title';
+        var titleClassical = new EditInPlace ({
+            id: 'titleClassical',
+            value: 'Title here',
+            parent: document.getElementById('doc'),
+            // 不把数据保存到后端，就是不调用ajax请求，即不传url
+            // url: title_url,
+            // key: title_key
+        });
+        // var titleClassical = 
+        // new EditInPlace('titleClassical',document.getElementById('doc'),'Title here',title_url,title_key);
+        // var nameClassical = 
+        // new EditInPlace('nameClassical',document.getElementById('doc'),'未命名');
+        // var addressClassical = 
+        // new EditInPlace('addressClassical',document.getElementById('doc'),'新建区');
+
+    </script>
+</body>
+</html>

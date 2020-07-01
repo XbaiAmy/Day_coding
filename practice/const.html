@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+    //    const user = 'ctc';
+    //    user = 'Amy';
+    //    const arr = [1,2];
+    //    arr.push(3);
+    //    arr = 'dd'
+    // 不用es6 es5中常量，用变量来模拟，如何实现常量const,实现私有属性和方法?
+    //    能读取到它
+    // var user = 'ctc';
+    // user = 'Amy';
+    // 不能设置，使用对象，在设置时让这个变量，跟你变量的查找作用域不会经过
+    // js有块级作用域，函数作用域和全局作用域 es5中无块级作用域
+    // 读取到它？
+
+    // JS的自执行函数,也叫立即执行函数，定义完之后立即执行
+    // 创建了函数作用域，外界访问不到里面？
+    // 让一个变量无法进行访问的操作
+    var User = (function() {
+        // 不加var，则默认为全局变量
+        var UPPER_BOUND = 100;
+        // 如何将值提供出来？
+        // return UPPER_BOUND;
+        var ctor = function() {
+
+        }
+        // 静态方法
+        ctor.getUPPER_BOUND = function() {
+            return UPPER_BOUND;
+        }
+        return ctor;
+    })();
+    console.log(User.getUPPER_BOUND);
+    </script>
+</body>
+</html>

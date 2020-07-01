@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图书类</title>
+    <style>
+        .box {
+            width: 200px;
+            height: 200px;
+            background-color: red;
+            overflow: hidden;
+        }
+        .inner{
+            width: 100px;
+            height: 100px;
+            background-color: pink;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // 封装
+        // var Book = function(isbn, title, author) {
+        //    this arguments 函数运行时生成 ？ throw？
+        // throw可以直接抛出/产生异常,导致控制流程转到catch块.
+        //    if(arguments.length == 0) {
+        //        throw new Error('没有指定isbn');
+        //    }
+        // isbn 安全？ 校验一下
+        // this.isbn = isbn;
+        //    console.log(this._checkIsbn(isbn));
+        //    this.setIsbn(isbn);
+        //    this.setTitle(title);
+        //    this.author = [];
+        //    this.setAuthor(author);
+        // }
+
+        // Book.prototype = {
+        //     getAuthor: function() {
+        //         return this.author.join(',');
+        //     },
+        //     getTitle: function() {
+        //         return this.title;
+        //     },
+        //     getIsbn: function() {
+        //         return this.isbn;
+        //     },
+        //     setAuthor: function(author) {
+        //         if(author) {
+        //             this.author.push(author);
+        //         }   
+        //     },
+            // setTitle:function(title) {
+                // 运算规则
+                // var a = 1;
+                // this.title = title || 'No title specified';
+                // console.log(a);
+            // },
+            // setIsbn: function(isbn) {
+            //     if(this._checkIsbn(isbn)) {
+            //         this.isbn = isbn;
+            //     } else {
+            //         throw new Error('isbn格式有误');
+            //     }
+            // },
+            // 方法前加了“_”约定是私有的函数
+            // _checkIsbn: function(isbn) {
+                // 规定：假定一本书9位正数才符合  正则，模式匹配内容，如何高效去验证
+                // ‘[]’表示一个字符， ‘-’表示范围，符号 ‘{}’表示长度{6,9}
+                // ^从字符串的开始就进行匹配
+                // $匹配到字符串的结束
+                // 正则表达式的符号为‘//’
+
+                // 简化代码
+                // return /^[0-9]{9}$/.test(isbn);
+                // if(/^[0-9]{9}$/.test(isbn)) {
+                //     return true;
+                // } else {
+                //     return false;
+                // }
+        //     }
+        // }
+
+        // 作者为数组，作者可能有多个人
+        // 手机号正则 /^1[0-9]{10}$/
+        // var book = new Book('123456789', '等风等你来', ['小马哥']);
+        // console.log(book.getIsbn());
+        // console.log(book.isbn);
+        // console.log(book.title);
+        // console.log(book.getTitle());
+        // book.setTitle = '我在等，等风等你来';
+        // 封装即隐藏
+        // 写类的人，尽量暴露少一点接口，用类的人用起来更简单，且可控
+        // checkIsbn 是public方法，可以调用，没有必要交给外界理解
+        // console.log(book._checkIsbn('12312121212'));
+        // book.isbn = 'wawaaw';
+        // 设计类
+        // 封装的力度,有私有属性和方法 确保类本身的概念完整， 方便调用
+        // 要做到私有，通过作用域来实现  如何实现共有和私有
+        var Book = function(newIsbn, newTitle, newAuthor) {
+            // isbn  title author为私有属性
+            // 下面均为局部变量
+            var isbn, title, author = [];
+
+            function checkIsbn (isbn) {
+                return /^[0-9]{9}$/.test(isbn);
+            }
+
+            // 用this是对象的属性，公开
+            this.setIsbn = function(newIsbn) {
+                if(checkIsbn(newIsbn)) {
+                    isbn = newIsbn;
+                } else {
+                    throw new Error('isbn 格式有误');
+                }
+            }
+
+            this.setTitle = function(newTitle) {
+                title = newTitle;
+            }
+
+            this.setAuthor = function(newAuthor) {
+                author.push(newAuthor);
+            }
+
+            this.getAuthor = function() {
+                return author;
+            }
+            this.getIsbn = function() {
+                return isbn;
+            }
+            this.getTite = function() {
+                return title;
+            }
+            this.setIsbn(newIsbn);
+            this.setTitle(newTitle);
+            this.setAuthor(newAuthor);
+        }
+
+        var book = new Book('123123123', '小红书', ['Amy']);
+    </script>
+     <div class="box">
+        <div class="inner"></div>
+     </div>
+     
+</body>
+</html>
